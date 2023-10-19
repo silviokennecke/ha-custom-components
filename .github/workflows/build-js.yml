@@ -1,0 +1,36 @@
+name: Build Components
+
+on:
+  push:
+    paths:
+      - 'components/**/*.js'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: |
+        npm install terser -g
+
+    - name: Minify and merge JS files
+      run: |
+        terser $(find components -name "*.js") --output dist/ha-custom-components.js
+
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "github-actions@github.com"
+        git add dist/all.min.js
+        git commit -m "Auto-minify and merge JS files"
+        git push
