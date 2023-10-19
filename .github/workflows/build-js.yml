@@ -1,6 +1,9 @@
 name: Build Components
 
-on: push
+on:
+  push:
+    paths:
+      - 'components/**/*.js'
 
 jobs:
   build:
