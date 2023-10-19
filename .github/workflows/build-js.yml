@@ -28,6 +28,6 @@ jobs:
       run: |
         git config user.name "GitHub Actions"
         git config user.email "github-actions@github.com"
-        git add dist/all.min.js
+        git add dist/ha-custom-components.js
         git commit -m "Auto-minify and merge JS files"
         git push
