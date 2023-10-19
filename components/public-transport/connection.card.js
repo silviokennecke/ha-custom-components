@@ -24,6 +24,7 @@ class PublicTransportConnectionCard extends LitElement {
         next_departure_time: 'next',
         next_arrival_time: 'next_on',
       },
+      theme: 'deutsche-bahn',
     };
   }
 
@@ -37,11 +38,12 @@ class PublicTransportConnectionCard extends LitElement {
   render() {
     const title = this.config.title;
     const entity = this.config.entity;
+    const theme = this.config.theme;
     const stateObj = this.hass.states[entity];
 
     if (!stateObj) {
       return html`
-        <ha-card>
+        <ha-card class="ptc-theme-${theme}">
           ${title ? html`<h1>${title}</h1>` : ''}
           <div class="not-found">Entity ${entity} not found.</div>
         </ha-card>
@@ -83,7 +85,7 @@ class PublicTransportConnectionCard extends LitElement {
     }
 
     return html`
-      <ha-card>
+      <ha-card class="ptc-theme-${theme}">
         ${title ? html`<h1>${title}</h1>` : ''}
         <div class="ptc-main" @click="${(ev) => this._handleAction('tap')}">
           <div class="ptc-row ptc-stations">
@@ -288,6 +290,23 @@ class PublicTransportConnectionCard extends LitElement {
       
       .ptc-connection .ptc-time-arrival {
         text-align: right;
+      }
+
+      /* Themes */
+
+      /** Deutsche Bahn **/
+      .ptc-theme-deutsche-bahn {
+        /* nothing to do, as this is the default */
+      }
+
+      /** Homeassistant **/
+      .ptc-theme-homeassistant {
+        --public-transport-connection-card-background-color: var(--ha-card-background,var(--card-background-color,#fff));
+        --public-transport-connection-card-foreground-color: var(--primary-text-color);
+      }
+
+      .ptc-theme-homeassistant h1 {
+        color: var(--ha-card-header-color,--primary-text-color);
       }
     `;
   }
