@@ -1,3 +1,4 @@
 {
-  "name": "Silvio's Custom HA Components"
+  "name": "Silvio's Custom HA Components",
+  "render_readme": true
 }
