@@ -54,7 +54,7 @@ class PublicTransportConnectionCard extends LitElement {
 
     const connections = {
       current: {
-        description: stateObj.attributes[this.config.attributes.description] || '',
+        description: stateObj.attributes[this.config.attributes.description].join(', ') || '',
         departure: {
           time: stateObj.attributes[this.config.attributes.departure_time],
           delay: stateObj.attributes[this.config.attributes.departure_delay] || '',
