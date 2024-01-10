@@ -15,15 +15,15 @@ class PublicTransportConnectionCard extends LitElement {
       departure_station: 'Home',
       arrival_station: 'Work',
       entity: 'sensor.my_station_to_another_station',
-      attributes: {
+      connection_attributes: {
+        connections: 'departures',
         description: 'products',
         departure_time: 'departure',
         departure_delay: 'delay',
         arrival_time: 'arrival',
         arrival_delay: 'delay_arrival',
-        next_departure_time: 'next',
-        next_arrival_time: 'next_on',
       },
+      displayed_connections: 3,
       theme: 'deutsche-bahn',
     };
   }
@@ -53,8 +53,18 @@ class PublicTransportConnectionCard extends LitElement {
     const icon = this.config.icon || stateObj.attributes.icon || 'mdi:train';
 
     const connections = {
-      current: {
-        description: stateObj.attributes[this.config.attributes.description].join(', ') || '',
+      current: {},
+      next: [],
+    };
+
+    const useAttributes = !!this.config.attributes;
+    const useConnections = !!this.config.connection_attributes;
+
+    if (useAttributes) {
+      const description = stateObj.attributes[this.config.attributes.description] || '';
+
+      connections.current = {
+        description: Array.isArray(description) ? description.join(', ') : description,
         departure: {
           time: stateObj.attributes[this.config.attributes.departure_time],
           delay: stateObj.attributes[this.config.attributes.departure_delay] || '',
@@ -65,23 +75,59 @@ class PublicTransportConnectionCard extends LitElement {
           delay: stateObj.attributes[this.config.attributes.arrival_delay] || '',
           station: stateObj.attributes[this.config.attributes.arrival_station] || this.config.arrival_station || '',
         },
-      },
-    };
-
-    if (this.config.attributes.next_departure_time && this.config.attributes.next_arrival_time) {
-      connections.next = {
-        description: stateObj.attributes[this.config.attributes.next_description] || '',
-        departure: {
-          time: stateObj.attributes[this.config.attributes.next_departure_time],
-          delay: stateObj.attributes[this.config.attributes.next_departure_delay] || '',
-          station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
-        },
-        arrival: {
-          time: stateObj.attributes[this.config.attributes.next_arrival_time],
-          delay: stateObj.attributes[this.config.attributes.next_arrival_delay] || '',
-          station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
-        },
       };
+
+      if (this.config.attributes.next_departure_time && this.config.attributes.next_arrival_time) {
+        const nextDescription = stateObj.attributes[this.config.attributes.next_description] || '';
+
+        connections.next = [
+          {
+            description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
+            departure: {
+              time: stateObj.attributes[this.config.attributes.next_departure_time],
+              delay: stateObj.attributes[this.config.attributes.next_departure_delay] || '',
+              station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
+            },
+            arrival: {
+              time: stateObj.attributes[this.config.attributes.next_arrival_time],
+              delay: stateObj.attributes[this.config.attributes.next_arrival_delay] || '',
+              station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
+            },
+          }
+        ];
+      }
+    } else if (useConnections) {
+      const nextConnections = stateObj.attributes[this.config.connection_attributes.connections] || [];
+
+      for (let i=0; i < this.config.displayed_connections && i < nextConnections.length; i++) {
+        const nextConnection = nextConnections[i];
+
+        if (nextConnection === undefined) {
+          continue;
+        }
+
+        const nextDescription = nextConnection[this.config.connection_attributes.description] || '';
+
+        const displayedConnection = {
+          description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
+            departure: {
+              time: nextConnection[this.config.connection_attributes.departure_time],
+              delay: nextConnection[this.config.connection_attributes.departure_delay] || '',
+              station: nextConnection[this.config.connection_attributes.departure_station] || this.config.departure_station || '',
+            },
+            arrival: {
+              time: nextConnection[this.config.connection_attributes.arrival_time],
+              delay: nextConnection[this.config.connection_attributes.arrival_delay] || '',
+              station: nextConnection[this.config.connection_attributes.arrival_station] || this.config.arrival_station || '',
+            },
+        };
+
+        if (i === 0) {
+          connections.current = displayedConnection;
+        } else {
+          connections.next.push(displayedConnection);
+        }
+      }
     }
 
     return html`
@@ -111,19 +157,19 @@ class PublicTransportConnectionCard extends LitElement {
               ${connections.current.arrival.delay > 0 ? html`+ ${connections.current.arrival.delay}` : ''}
             </div>
           </div>
-          ${connections.next ? html`
+          ${connections.next.map(connection => html`
             <div class="ptc-row ptc-connection ptc-next-connection">
               <div class="ptc-time-departure">
-                ${connections.next.departure.time}
-                ${connections.next.departure.delay > 0 ? html`+ ${connections.next.departure.delay}` : ''}
+                ${connection.departure.time}
+                ${connection.departure.delay > 0 ? html`+ ${connection.departure.delay}` : ''}
               </div>
-              <div class="ptc-connection-description">${connections.next.description}</div>
+              <div class="ptc-connection-description">${connection.description}</div>
               <div class="ptc-time-arrival">
-                ${connections.next.arrival.time}
-                ${connections.next.arrival.delay > 0 ? html`+ ${connections.next.arrival.delay}` : ''}
+                ${connection.arrival.time}
+                ${connection.arrival.delay > 0 ? html`+ ${connection.arrival.delay}` : ''}
               </div>
             </div>
-          ` : ''}
+          `)}
         </div>
       </ha-card>
     `;
@@ -134,20 +180,49 @@ class PublicTransportConnectionCard extends LitElement {
       throw new Error("You need to define an entity");
     }
 
-    if (!config.attributes) {
-      throw new Error("You need to define attributes");
+    const useAttributes = !!config.attributes;
+    const useConnectionsList = !!config.connection_attributes;
+
+    if (!useAttributes && !useConnectionsList) {
+      throw new Error("You need to define attributes or connection_attributes");
+    } else if (useAttributes && useConnectionsList) {
+      throw new Error("Yout cann only use attributes or connection_attributes. You cannot use both");
     }
 
-    if (!config.attributes.departure_time) {
-      throw new Error("You need to define the departure attribute");
+    if (useAttributes) {
+      if (!!config.displayed_connections) {
+        throw new Error("You cannot define displayed_connections, when using attributes");
+      }
+
+      if (!config.attributes.departure_time) {
+        throw new Error("You need to define the departure attribute");
+      }
+
+      if (!config.attributes.arrival_time) {
+        throw new Error("You need to define the arrival attribute");
+      }
+
+      if (config.attributes.next_departure_time && !config.attributes.next_arrival_time) {
+        throw new Error("If you define the next_departure attribute, you need to also define the next_arrival attribute");
+      }
     }
 
-    if (!config.attributes.arrival_time) {
-      throw new Error("You need to define the arrival attribute");
-    }
+    if (useConnectionsList) {
+      if (!config.displayed_connections || config.displayed_connections < 1) {
+        throw new Error("displayed_connections must be set to 1 or higher");
+      }
 
-    if (config.attributes.next_departure_time && !config.attributes.next_arrival_time) {
-      throw new Error("If you define the next_departure attribute, you need to also define the next_arrival attribute");
+      if (!config.connection_attributes.connections) {
+        throw new Error("You must define the connections attribute");
+      }
+
+      if (!config.connection_attributes.departure_time) {
+        throw new Error("You must define the departure_time attribute for connection entries");
+      }
+
+      if (!config.connection_attributes.arrival_time) {
+        throw new Error("You must define the arrival_time attribute for connection entries");
+      }
     }
 
     this.config = {
@@ -312,4 +387,4 @@ class PublicTransportConnectionCard extends LitElement {
   }
 }
   
-  customElements.define("public-transport-connection-card", PublicTransportConnectionCard);
+customElements.define("public-transport-connection-card", PublicTransportConnectionCard);
