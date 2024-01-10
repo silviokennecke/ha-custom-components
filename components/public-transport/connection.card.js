@@ -15,8 +15,8 @@ class PublicTransportConnectionCard extends LitElement {
       departure_station: 'Home',
       arrival_station: 'Work',
       entity: 'sensor.my_station_to_another_station',
-      connection_attributes: {
-        connections: 'departures',
+      connections_attribute: 'departures',
+      connection_properties: {
         description: 'products',
         departure_time: 'departure',
         departure_delay: 'delay',
@@ -58,7 +58,7 @@ class PublicTransportConnectionCard extends LitElement {
     };
 
     const useAttributes = !!this.config.attributes;
-    const useConnections = !!this.config.connection_attributes;
+    const useConnections = !!this.config.connections_attribute;
 
     if (useAttributes) {
       const description = stateObj.attributes[this.config.attributes.description] || '';
@@ -97,7 +97,7 @@ class PublicTransportConnectionCard extends LitElement {
         ];
       }
     } else if (useConnections) {
-      const nextConnections = stateObj.attributes[this.config.connection_attributes.connections] || [];
+      const nextConnections = stateObj.attributes[this.config.connections_attribute] || [];
 
       for (let i=0; i < this.config.displayed_connections && i < nextConnections.length; i++) {
         const nextConnection = nextConnections[i];
@@ -106,19 +106,19 @@ class PublicTransportConnectionCard extends LitElement {
           continue;
         }
 
-        const nextDescription = nextConnection[this.config.connection_attributes.description] || '';
+        const nextDescription = nextConnection[this.config.connection_properties.description] || '';
 
         const displayedConnection = {
           description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
             departure: {
-              time: nextConnection[this.config.connection_attributes.departure_time],
-              delay: nextConnection[this.config.connection_attributes.departure_delay] || '',
-              station: nextConnection[this.config.connection_attributes.departure_station] || this.config.departure_station || '',
+              time: nextConnection[this.config.connection_properties.departure_time],
+              delay: nextConnection[this.config.connection_properties.departure_delay] || '',
+              station: nextConnection[this.config.connection_properties.departure_station] || this.config.departure_station || '',
             },
             arrival: {
-              time: nextConnection[this.config.connection_attributes.arrival_time],
-              delay: nextConnection[this.config.connection_attributes.arrival_delay] || '',
-              station: nextConnection[this.config.connection_attributes.arrival_station] || this.config.arrival_station || '',
+              time: nextConnection[this.config.connection_properties.arrival_time],
+              delay: nextConnection[this.config.connection_properties.arrival_delay] || '',
+              station: nextConnection[this.config.connection_properties.arrival_station] || this.config.arrival_station || '',
             },
         };
 
@@ -181,12 +181,12 @@ class PublicTransportConnectionCard extends LitElement {
     }
 
     const useAttributes = !!config.attributes;
-    const useConnectionsList = !!config.connection_attributes;
+    const useConnectionsList = !!config.connections_attribute;
 
     if (!useAttributes && !useConnectionsList) {
-      throw new Error("You need to define attributes or connection_attributes");
+      throw new Error("You need to define attributes or connections_attribute");
     } else if (useAttributes && useConnectionsList) {
-      throw new Error("Yout cann only use attributes or connection_attributes. You cannot use both");
+      throw new Error("Yout cann only use attributes or connections_attribute. You cannot use both");
     }
 
     if (useAttributes) {
@@ -212,16 +212,16 @@ class PublicTransportConnectionCard extends LitElement {
         throw new Error("displayed_connections must be set to 1 or higher");
       }
 
-      if (!config.connection_attributes.connections) {
-        throw new Error("You must define the connections attribute");
+      if (!config.connections_attribute) {
+        throw new Error("You must define the connections_attribute");
       }
 
-      if (!config.connection_attributes.departure_time) {
-        throw new Error("You must define the departure_time attribute for connection entries");
+      if (!config.connection_properties.departure_time) {
+        throw new Error("You must define the departure_time property for connection entries");
       }
 
-      if (!config.connection_attributes.arrival_time) {
-        throw new Error("You must define the arrival_time attribute for connection entries");
+      if (!config.connection_properties.arrival_time) {
+        throw new Error("You must define the arrival_time property for connection entries");
       }
     }
 
@@ -386,5 +386,5 @@ class PublicTransportConnectionCard extends LitElement {
     `;
   }
 }
-  
+
 customElements.define("public-transport-connection-card", PublicTransportConnectionCard);
