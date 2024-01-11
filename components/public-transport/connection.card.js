@@ -354,12 +354,12 @@ class PublicTransportConnectionCard extends LitElement {
 
       .ptc-connection .ptc-time-departure,
       .ptc-connection .ptc-time-arrival {
-        flex-grow: 1;
+        flex-basis: 25%;
         text-align: left;
       }
       
       .ptc-connection .ptc-connection-description {
-        flex-grow: 2;
+        flex-basis: 50%;
         text-align: center;
       }
       
