@@ -4,9 +4,13 @@ import {
   css,
 } from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
 
-function datetimeOrTime(time) {
+function timeToStr(time) {
   const parse = Date.parse(time);
   return parse ? (new Date(parse)).toLocaleTimeString([],{'timeStyle':'short'}) : time;
+}
+
+function delayToMinutes(delay) {
+  return (Date.parse('1.1.1970 ' + delay)-Date.parse('1.1.1970'))/60000 ?? (delay || 0);
 }
 
 class PublicTransportConnectionCard extends LitElement {
@@ -71,13 +75,13 @@ class PublicTransportConnectionCard extends LitElement {
       connections.current = {
         description: Array.isArray(description) ? description.join(', ') : description,
         departure: {
-          time: stateObj.attributes[this.config.attributes.departure_time],
-          delay: stateObj.attributes[this.config.attributes.departure_delay] || '',
+          time: timeToStr(stateObj.attributes[this.config.attributes.departure_time]),
+          delay: delayToMinutes(stateObj.attributes[this.config.attributes.departure_delay]),
           station: stateObj.attributes[this.config.attributes.departure_station] || this.config.departure_station || '',
         },
         arrival: {
-          time: stateObj.attributes[this.config.attributes.arrival_time],
-          delay: stateObj.attributes[this.config.attributes.arrival_delay] || '',
+          time: timeToStr(stateObj.attributes[this.config.attributes.arrival_time]),
+          delay: delayToMinutes(stateObj.attributes[this.config.attributes.arrival_delay]),
           station: stateObj.attributes[this.config.attributes.arrival_station] || this.config.arrival_station || '',
         },
       };
@@ -89,13 +93,13 @@ class PublicTransportConnectionCard extends LitElement {
           {
             description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
             departure: {
-              time: stateObj.attributes[this.config.attributes.next_departure_time],
-              delay: stateObj.attributes[this.config.attributes.next_departure_delay] || '',
+              time: timeToStr(stateObj.attributes[this.config.attributes.next_departure_time]),
+              delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_departure_delay]),
               station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
             },
             arrival: {
-              time: stateObj.attributes[this.config.attributes.next_arrival_time],
-              delay: stateObj.attributes[this.config.attributes.next_arrival_delay] || '',
+              time: timeToStr(stateObj.attributes[this.config.attributes.next_arrival_time]),
+              delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_arrival_delay]),
               station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
             },
           }
@@ -116,13 +120,13 @@ class PublicTransportConnectionCard extends LitElement {
         const displayedConnection = {
           description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
             departure: {
-              time: nextConnection[this.config.connection_properties.departure_time],
-              delay: nextConnection[this.config.connection_properties.departure_delay] || '',
+              time: timeToStr(nextConnection[this.config.connection_properties.departure_time]),
+              delay: delayToMinutes(nextConnection[this.config.connection_properties.departure_delay]),
               station: nextConnection[this.config.connection_properties.departure_station] || this.config.departure_station || '',
             },
             arrival: {
-              time: nextConnection[this.config.connection_properties.arrival_time],
-              delay: nextConnection[this.config.connection_properties.arrival_delay] || '',
+              time: timeToStr(nextConnection[this.config.connection_properties.arrival_time]),
+              delay: delayToMinutes(nextConnection[this.config.connection_properties.arrival_delay]),
               station: nextConnection[this.config.connection_properties.arrival_station] || this.config.arrival_station || '',
             },
         };
@@ -153,24 +157,24 @@ class PublicTransportConnectionCard extends LitElement {
           </div>
           <div class="ptc-row ptc-connection ptc-current-connection">
             <div class="ptc-time-departure">
-              ${datetimeOrTime(connections.current.departure.time)}
+              ${connections.current.departure.time}
               ${connections.current.departure.delay > 0 ? html`+ ${connections.current.departure.delay}` : ''}
             </div>
             <div class="ptc-connection-description">${connections.current.description}</div>
             <div class="ptc-time-arrival">
-              ${datetimeOrTime(connections.current.arrival.time)}
+              ${connections.current.arrival.time}
               ${connections.current.arrival.delay > 0 ? html`+ ${connections.current.arrival.delay}` : ''}
             </div>
           </div>
           ${connections.next.map(connection => html`
             <div class="ptc-row ptc-connection ptc-next-connection">
               <div class="ptc-time-departure">
-                ${datetimeOrTime(connection.departure.time)}
+                ${connection.departure.time}
                 ${connection.departure.delay > 0 ? html`+ ${connection.departure.delay}` : ''}
               </div>
               <div class="ptc-connection-description">${connection.description}</div>
               <div class="ptc-time-arrival">
-                ${datetimeOrTime(connection.arrival.time)}
+                ${connection.arrival.time}
                 ${connection.arrival.delay > 0 ? html`+ ${connection.arrival.delay}` : ''}
               </div>
             </div>
