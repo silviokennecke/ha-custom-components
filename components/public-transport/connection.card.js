@@ -4,6 +4,11 @@ import {
   css,
 } from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
 
+function datetimeOrTime(time) {
+  const parse = Date.parse(time);
+  return parse ? (new Date(parse)).toLocaleTimeString([],{'timeStyle':'short'}) : time;
+}
+
 class PublicTransportConnectionCard extends LitElement {
   /*static getConfigElement() {
     return document.createElement("content-card-editor");
@@ -148,24 +153,24 @@ class PublicTransportConnectionCard extends LitElement {
           </div>
           <div class="ptc-row ptc-connection ptc-current-connection">
             <div class="ptc-time-departure">
-              ${connections.current.departure.time}
+              ${datetimeOrTime(connections.current.departure.time)}
               ${connections.current.departure.delay > 0 ? html`+ ${connections.current.departure.delay}` : ''}
             </div>
             <div class="ptc-connection-description">${connections.current.description}</div>
             <div class="ptc-time-arrival">
-              ${connections.current.arrival.time}
+              ${datetimeOrTime(connections.current.arrival.time)}
               ${connections.current.arrival.delay > 0 ? html`+ ${connections.current.arrival.delay}` : ''}
             </div>
           </div>
           ${connections.next.map(connection => html`
             <div class="ptc-row ptc-connection ptc-next-connection">
               <div class="ptc-time-departure">
-                ${connection.departure.time}
+                ${datetimeOrTime(connection.departure.time)}
                 ${connection.departure.delay > 0 ? html`+ ${connection.departure.delay}` : ''}
               </div>
               <div class="ptc-connection-description">${connection.description}</div>
               <div class="ptc-time-arrival">
-                ${connection.arrival.time}
+                ${datetimeOrTime(connection.arrival.time)}
                 ${connection.arrival.delay > 0 ? html`+ ${connection.arrival.delay}` : ''}
               </div>
             </div>
