@@ -14,17 +14,103 @@ function delayToMinutes(delay) {
 }
 
 class PublicTransportConnectionCard extends LitElement {
-  /*static getConfigElement() {
-    return document.createElement("content-card-editor");
-  }*/
-
-  static getStubConfig() {
+  static getConfigForm() {
     return {
-      title: 'Next train',
-      departure_station: 'Home',
-      arrival_station: 'Work',
-      entity: 'sensor.my_station_to_another_station',
-      connections_attribute: 'departures',
+      schema: [
+        {
+          name: "entity",
+          required: true,
+          selector: { entity: { domain: "sensor" } },
+        },
+        { name: "title", selector: { text: {} } },
+        { name: "icon", selector: { icon: {} } },
+        { name: "departure_station", selector: { text: {} } },
+        { name: "arrival_station", selector: { text: {} } },
+        {
+          name: "connections_attribute",
+          required: true,
+          selector: {
+            attribute: { entity_id: "" }
+          },
+          context: {
+            filter_entity: "entity"
+          }
+        },
+        {
+          name: "connection_properties",
+          type: "grid",
+          schema: [
+            { name: "description", selector: { text: {} } },
+            { name: "departure_time", selector: { text: {} } },
+            { name: "departure_delay", selector: { text: {} } },
+            { name: "arrival_time", selector: { text: {} } },
+            { name: "arrival_delay", selector: { text: {} } },
+          ],
+        },
+        { name: "displayed_connections", selector: { number: { min: 1 } } },
+        {
+          name: "theme",
+          selector: {
+            select: {
+              options: ['deutsche-bahn', 'homeassistant'],
+              custom_value: true,
+            }
+          }
+        }
+      ],
+    };
+  }
+
+  static getStubConfig(hass, unusedEntities, allEntities) {
+    // defaults for deutschebahn and hafas
+    const defaultAttributes = {
+      connections: ['departures', 'connections'],
+      departureStation: ['start', 'origin'],
+      arrivalStation: ['goal', 'destination'],
+    };
+
+    function getAttributeName(entityId, defaultAttributes) {
+      const entity = hass.states[entityId] ?? { attributes: {} };
+
+      for (const attribute of defaultAttributes) {
+        if (entity.attributes[attribute] !== undefined) {
+          return attribute;
+        }
+      }
+
+      return undefined;
+    }
+
+    function getAttribute(entityId, defaultAttributes, defaultValue = undefined) {
+      const entity = hass.states[entityId] ?? { attributes: {} };
+      const attributeName = getAttributeName(entityId, defaultAttributes);
+
+      if (attributeName === undefined) {
+        return defaultValue;
+      } else {
+        return entity.attributes[attributeName];
+      }
+    }
+
+    function isPublicTransportSensor(entityId) {
+      if (entityId.split('.')[0] !== 'sensor') {
+        return false;
+      }
+
+      return getAttributeName(entityId, defaultAttributes.connections) !== undefined;
+    }
+
+    let entityId = unusedEntities.find(isPublicTransportSensor);
+    if (!entityId) {
+      entityId = allEntities.find(isPublicTransportSensor) || '';
+    }
+
+    return {
+      title: '', // e.g. Next train
+      departure_station: getAttribute(entityId, defaultAttributes.departureStation, ''), // e.g. Home
+      arrival_station: getAttribute(entityId, defaultAttributes.arrivalStation, ''), // e.g. Work
+      entity: entityId,
+      connections_attribute: getAttributeName(entityId, defaultAttributes.connections),
       connection_properties: {
         description: 'products',
         departure_time: 'departure',
@@ -246,6 +332,15 @@ class PublicTransportConnectionCard extends LitElement {
     return 2;
   }
 
+  getLayoutOptions() {
+    return {
+      grid_rows: 2,
+      grid_columns: 4,
+      grid_min_rows: 2,
+      grid_min_columns: 2,
+    };
+  }
+
   _handleAction(action) {
     const event = new Event('hass-action', {
       bubbles: true,
@@ -395,5 +490,13 @@ class PublicTransportConnectionCard extends LitElement {
     `;
   }
 }
-
+  
 customElements.define("public-transport-connection-card", PublicTransportConnectionCard);
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "public-transport-connection-card",
+  name: "Public Transport Connection Card",
+  preview: true,
+  description: "Display your next connections via public transportation.",
+  documentationURL: "https://github.com/silviokennecke/ha-custom-components/wiki/Components#public-transport-connection",
+});
