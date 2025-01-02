@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added public transport card
 
-[unreleased]: https://github.com/silviokennecke/ha-custom-components/compare/1.0.1...HEAD
+[unreleased]: https://github.com/silviokennecke/ha-custom-components/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/silviokennecke/ha-custom-components/compare/1.1.1...1.2.0
+[1.1.1]: https://github.com/silviokennecke/ha-custom-components/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/silviokennecke/ha-custom-components/compare/1.0.1...1.1.0
 [1.0.1]: https://github.com/silviokennecke/ha-custom-components/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/silviokennecke/ha-custom-components/releases/tag/1.0.0
