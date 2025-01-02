@@ -35,6 +35,16 @@ class PublicTransportConnectionCard extends LitElement {
     };
   }
 
+  renderTime(timeValue) {
+    // iso timestamp (dd.mm.yyyyThh:mm:ss+zzzz)
+    if (/^\d{4}(.\d{2}){2}(\s|T)(\d{2}.){2}\d{2}(\.\d+)?((\+\d{2}:?\d{2})|Z)?$/.test(timeValue)) {
+      const dateTime = new Date(timeValue);
+      timeValue = `${dateTime.getHours().toString().padStart(2, '0')}:${dateTime.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    return timeValue;
+  }
+
   render() {
     const title = this.config.title;
     const entity = this.config.entity;
@@ -66,12 +76,12 @@ class PublicTransportConnectionCard extends LitElement {
       connections.current = {
         description: Array.isArray(description) ? description.join(', ') : description,
         departure: {
-          time: stateObj.attributes[this.config.attributes.departure_time],
+          time: this.renderTime(stateObj.attributes[this.config.attributes.departure_time]),
           delay: stateObj.attributes[this.config.attributes.departure_delay] || '',
           station: stateObj.attributes[this.config.attributes.departure_station] || this.config.departure_station || '',
         },
         arrival: {
-          time: stateObj.attributes[this.config.attributes.arrival_time],
+          time: this.renderTime(stateObj.attributes[this.config.attributes.arrival_time]),
           delay: stateObj.attributes[this.config.attributes.arrival_delay] || '',
           station: stateObj.attributes[this.config.attributes.arrival_station] || this.config.arrival_station || '',
         },
@@ -84,12 +94,12 @@ class PublicTransportConnectionCard extends LitElement {
           {
             description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
             departure: {
-              time: stateObj.attributes[this.config.attributes.next_departure_time],
+              time: this.renderTime(stateObj.attributes[this.config.attributes.next_departure_time]),
               delay: stateObj.attributes[this.config.attributes.next_departure_delay] || '',
               station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
             },
             arrival: {
-              time: stateObj.attributes[this.config.attributes.next_arrival_time],
+              time: this.renderTime(stateObj.attributes[this.config.attributes.next_arrival_time]),
               delay: stateObj.attributes[this.config.attributes.next_arrival_delay] || '',
               station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
             },
@@ -111,12 +121,12 @@ class PublicTransportConnectionCard extends LitElement {
         const displayedConnection = {
           description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
             departure: {
-              time: nextConnection[this.config.connection_properties.departure_time],
+              time: this.renderTime(nextConnection[this.config.connection_properties.departure_time]),
               delay: nextConnection[this.config.connection_properties.departure_delay] || '',
               station: nextConnection[this.config.connection_properties.departure_station] || this.config.departure_station || '',
             },
             arrival: {
-              time: nextConnection[this.config.connection_properties.arrival_time],
+              time: this.renderTime(nextConnection[this.config.connection_properties.arrival_time]),
               delay: nextConnection[this.config.connection_properties.arrival_delay] || '',
               station: nextConnection[this.config.connection_properties.arrival_station] || this.config.arrival_station || '',
             },
