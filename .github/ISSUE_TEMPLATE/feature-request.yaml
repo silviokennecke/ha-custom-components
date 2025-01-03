@@ -1,0 +1,26 @@
+name: Feature Request
+description: Request a new feature or enhancement
+title: "[Feature Request]: "
+labels: [ "enhancement" ]
+body:
+  - type: input
+    id: home_assistant_version
+    attributes:
+      label: Home Assistant Version
+      description: Does your feature request relate to a specific version or a feature just released in a specific version?
+    validations:
+      required: false
+  - type: input
+    id: sensor_integration
+    attributes:
+      label: Public Transport Sensor Integration
+      description: Does your request relate to a specific public transport integration (e.g. ha-deutschebahn, hacs-hafas)?
+    validations:
+      required: false
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Description of the feature
+      description: Please describe the feature you would like to see implemented. Include any relevant details.
+    validations:
+      required: true

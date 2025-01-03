@@ -1,0 +1,61 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: [ "bug" ]
+body:
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin Version
+      description: Which version of the plugin did you install
+    validations:
+      required: true
+  - type: input
+    id: home_assistant_version
+    attributes:
+      label: Home Assistant Version
+      description: Which Home Assistant version are you using?
+    validations:
+      required: true
+  - type: input
+    id: user_agent
+    attributes:
+      label: Browser / User Agent
+      description: Which browser and version are you using? Alternatively, you can provide the [user agent string](https://www.whatsmyua.info/).
+    validations:
+      required: true
+  - type: input
+    id: sensor_integration
+    attributes:
+      label: Public Transport Sensor Integration
+      description: Which Home Assistant integration is used to provide the sensor (e.g. ha-deutschebahn, hacs-hafas)?
+    validations:
+      required: true
+  - type: dropdown
+    id: dashboard_view_type
+    attributes:
+      label: Dashboard view type
+      description: Which view type is configured for your dashboard?
+      options:
+        - Masonry
+        - Panel
+        - Sections
+        - Sidebar
+      default: 2
+    validations:
+      required: true
+  - type: textarea
+    id: card_configuration
+    attributes:
+      label: Card configuration
+      description: Please provide the configuration of the card. Remember to remove any sensitive information.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: Description of the issue
+      description: Please provide a detailed description of the issue.
+    validations:
+      required: true
