@@ -36,7 +36,7 @@ jobs:
         git config user.email "github-actions@github.com"
 
         git add dist/ha-public-transport-connection-card.js
-        if [[ $(git status --porcelain=v1 2>/dev/nul | wc -l) -ne 0 ]]; then
+        if [[ $(git status --porcelain=v1 | wc -l) -ne 0 ]]; then
           git commit -m "Auto-minify and merge JS files"
           git push
         fi
