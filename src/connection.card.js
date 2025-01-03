@@ -505,5 +505,5 @@ window.customCards.push({
     name: "Public Transport Connection Card",
     preview: true,
     description: "Display your next connections via public transportation.",
-    documentationURL: "https://github.com/silviokennecke/ha-custom-components/wiki/Components#public-transport-connection",
+    documentationURL: "https://github.com/silviokennecke/ha-public-transport-connection-card/wiki/Components#public-transport-connection",
 });

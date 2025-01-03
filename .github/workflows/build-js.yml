@@ -3,12 +3,13 @@ name: Build Components
 on:
   push:
     paths:
-      - 'components/**/*.js'
+      - 'src/*.js'
+      - 'src/**/*.js'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
 
@@ -27,13 +28,15 @@ jobs:
 
     - name: Minify and merge JS files
       run: |
-        terser $(find components -name "*.js") --output dist/ha-custom-components.js
-
+        terser $(find components -name "*.js") --output dist/ha-public-transport-connection-card.js
 
     - name: Commit and push changes
       run: |
         git config user.name "GitHub Actions"
         git config user.email "github-actions@github.com"
-        git add dist/ha-custom-components.js
-        git commit -m "Auto-minify and merge JS files"
-        git push
+
+        git add dist/ha-public-transport-connection-card.js
+        if [[ $(git status --porcelain=v1 2>/dev/nul | wc -l) -ne 0 ]]; then
+          git commit -m "Auto-minify and merge JS files"
+          git push
+        fi
