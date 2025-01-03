@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-01-03
+
+This release is a breaking change, as the repository name has been changed and the built JS file also had to be renamed.
+The implementation did not change.
+
+### Changed
+
+- Change the repository name to `ha-public-transport-connection-card`
+
 ## [1.2.0] - 2025-01-02
 
 ### Added
